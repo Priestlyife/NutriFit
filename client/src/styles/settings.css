@@ -1,0 +1,401 @@
+/* ================= SETTINGS PAGE SYSTEM ================= */
+
+:root {
+  --primary: #2e7d32;
+  --primary-hover: #1b5e20;
+  --primary-light: #e8f5e9;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --surface: #ffffff;
+  --bg-gradient: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+  --border: #e5e7eb;
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 10px 25px rgba(46, 125, 50, 0.08);
+}
+
+.settings-page {
+  padding: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--text-main);
+  box-sizing: border-box;
+}
+
+.settings-header {
+  margin-bottom: 30px;
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--primary-hover);
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.page-subtitle {
+  font-size: 16px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.settings-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ================= GLASS CARDS ================= */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+/* ================= AVATAR SECTION ================= */
+.profile-header-card {
+  display: flex;
+  align-items: center;
+  padding: 24px 30px;
+  gap: 24px;
+}
+
+.avatar-wrapper {
+  position: relative;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 8px 20px rgba(46, 125, 50, 0.2);
+}
+
+.profile-info h2 {
+  margin: 0 0 4px 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.profile-info p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
+/* ================= MAIN SETTINGS AREA ================= */
+.settings-main-card {
+  padding: 40px;
+}
+
+.settings-section {
+  margin-bottom: 30px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.divider {
+  border: 0;
+  height: 1px;
+  background: var(--border);
+  margin: 30px 0;
+}
+
+/* ================= FLOATING LABEL INPUTS ================= */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.input-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 16px 16px 16px 16px;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  background: transparent;
+  font-size: 15px;
+  color: var(--text-main);
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  appearance: none;
+}
+
+.input-group select {
+  cursor: pointer;
+}
+
+.input-group label {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  font-size: 15px;
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: all 0.2s ease;
+  background: white;
+  padding: 0 4px;
+}
+
+/* Floating label logic */
+.input-group input:focus,
+.input-group input:not(:placeholder-shown),
+.input-group select:focus,
+.input-group label.active {
+  border-color: var(--primary);
+}
+
+.input-group input:focus ~ label,
+.input-group input:not(:placeholder-shown) ~ label,
+.input-group select:focus ~ label,
+.input-group label.active,
+.input-group select:valid ~ label {
+  top: 0;
+  font-size: 12px;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.input-icon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  pointer-events: none;
+}
+
+/* ================= GOAL CARDS ================= */
+.goal-cards-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.goal-card {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.goal-card:hover {
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.goal-card.active {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.1);
+}
+
+.goal-icon {
+  font-size: 32px;
+  margin-bottom: 4px;
+}
+
+.goal-card h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.goal-card p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ================= ACTIVITY PILLS ================= */
+.activity-pills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.activity-pill {
+  padding: 12px 20px;
+  border-radius: 50px;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.activity-pill:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.activity-pill.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+}
+
+.pill-icon {
+  font-size: 16px;
+}
+
+/* ================= SAVE BUTTON & TOAST ================= */
+.settings-actions {
+  margin-top: 40px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.save-btn {
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: white;
+  border: none;
+  padding: 16px 40px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 8px 20px rgba(46, 125, 50, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 180px;
+}
+
+.save-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(46, 125, 50, 0.35);
+}
+
+.save-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.save-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Loading Spinner */
+.loader {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Modern Toast Notification */
+.toast-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 16px 24px;
+  border-radius: 12px;
+  background: white;
+  color: var(--text-main);
+  font-weight: 600;
+  font-size: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transform: translateX(120%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+}
+
+.toast-notification.show {
+  transform: translateX(0);
+}
+
+.toast-notification.success {
+  border-left: 4px solid var(--primary);
+}
+
+.toast-notification.error {
+  border-left: 4px solid #ef4444;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .settings-page {
+    padding: 20px;
+  }
+  
+  .settings-main-card {
+    padding: 24px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .goal-cards-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .activity-pills-container {
+    flex-direction: column;
+  }
+  
+  .activity-pill {
+    justify-content: center;
+  }
+  
+  .save-btn {
+    width: 100%;
+  }
+}

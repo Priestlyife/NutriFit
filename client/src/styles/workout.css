@@ -1,0 +1,343 @@
+/* ================= WORKOUT PAGE SYSTEM ================= */
+
+:root {
+  --primary: #2e7d32;
+  --primary-hover: #1b5e20;
+  --primary-light: #e8f5e9;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --surface: #ffffff;
+  --bg-gradient: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+  --border: #e5e7eb;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 10px 25px rgba(46, 125, 50, 0.08);
+}
+
+.workout-page {
+  padding: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--text-main);
+  box-sizing: border-box;
+}
+
+.workout-header {
+  margin-bottom: 30px;
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--primary-hover);
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.page-subtitle {
+  font-size: 16px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ================= GLASS CARDS ================= */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+}
+
+/* ================= PROGRESS SECTION ================= */
+.progress-card {
+  margin-bottom: 30px;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 15px;
+}
+
+.progress-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.progress-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 12px;
+  background: #e5e7eb;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 20px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.success-message {
+  margin: 15px 0 0 0;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 14px;
+  background: var(--primary-light);
+  padding: 10px 16px;
+  border-radius: 10px;
+  display: inline-block;
+}
+
+/* ================= MAIN LAYOUT ================= */
+.workout-grid-layout {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr;
+  gap: 30px;
+  align-items: start;
+}
+
+.section-heading {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+}
+
+/* ================= EXERCISE CARDS ================= */
+.exercise-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.exercise-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.exercise-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.exercise-card.done {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.exercise-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 160px;
+}
+
+.exercise-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.done-overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--primary);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.exercise-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.exercise-content h4 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.video-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #ef4444; /* YouTube red */
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  transition: opacity 0.2s;
+}
+
+.video-link:hover {
+  opacity: 0.8;
+}
+
+.no-video {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  font-style: italic;
+}
+
+.toggle-btn {
+  margin-top: auto;
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-pending {
+  background: #f1f5f9;
+  color: var(--text-main);
+  border: 1px solid #cbd5e1;
+}
+
+.btn-pending:hover {
+  background: #e2e8f0;
+}
+
+.btn-completed {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 4px 10px rgba(46, 125, 50, 0.3);
+}
+
+.btn-completed:hover {
+  background: var(--primary-hover);
+}
+
+/* ================= AI PLAN SECTION ================= */
+.ai-card {
+  position: sticky;
+  top: 20px;
+}
+
+.ai-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ai-icon {
+  font-size: 24px;
+  background: var(--primary-light);
+  padding: 8px;
+  border-radius: 12px;
+}
+
+.ai-card-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.ai-formatted-content {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-main);
+}
+
+.ai-formatted-content ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+.plan-section-title {
+  color: var(--primary-hover);
+  font-size: 16px;
+  font-weight: 700;
+  margin: 20px 0 10px 0;
+  text-transform: capitalize;
+  border-bottom: 2px solid var(--primary-light);
+  padding-bottom: 4px;
+  display: inline-block;
+}
+
+.plan-bullet {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 8px;
+}
+
+.plan-bullet::before {
+  content: "•";
+  color: var(--primary);
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.plan-text {
+  margin-bottom: 12px;
+}
+
+.loading-text {
+  color: var(--text-muted);
+  font-style: italic;
+  text-align: center;
+  padding: 20px 0;
+}
+
+/* ================= RESPONSIVE LAYOUT ================= */
+@media (max-width: 1024px) {
+  .workout-grid-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .ai-card {
+    position: static;
+  }
+}
+
+@media (max-width: 600px) {
+  .workout-page {
+    padding: 20px;
+  }
+  
+  .exercise-grid {
+    grid-template-columns: 1fr;
+  }
+}
