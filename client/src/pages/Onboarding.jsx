@@ -1,8 +1,10 @@
 import { useState } from "react";
+import API from "../config";
 import "../styles/onboarding.css";
 
 function Onboarding() {
   const [step, setStep] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   // ✅ FIX 1: define slides
   const slides = 5;
@@ -29,6 +31,11 @@ function Onboarding() {
   };
 
   const nextStep = async () => {
+  if (isLoading) return;
+
+  setIsLoading(true);
+
+  try {
     // STEP 0 - Goal validation
     if (step === 0 && !formData.goal) return;
 
@@ -44,16 +51,18 @@ function Onboarding() {
 
     // STEP 2 - Activity validation
     if (step === 2 && !formData.activity) return;
+
     // STEP 3 - Diet validation
     if (step === 3 && !formData.diet) return;
 
+    // 🔥 FINAL STEP (SAVE DATA)
     if (step === slides - 1) {
       const calories = calculateCalories();
 
       const userData = localStorage.getItem("user");
 
       if (!userData) {
-        console.error("User not found in localStorage");
+        alert("User not found. Please login again.");
         return;
       }
 
@@ -72,35 +81,37 @@ function Onboarding() {
         calculatedCalories: calories
       };
 
-      try {
-        const response = await fetch("http://localhost:5000/api/profile/create", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(finalUserData)
-        });
+      const response = await fetch(`${API}/api/profile/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(finalUserData)
+      });
 
-        const data = await response.json();
+      const data = await response.json();
 
-        console.log("PROFILE RESPONSE:", data);
+      console.log("PROFILE RESPONSE:", data);
 
-        if (!response.ok) {
-          console.error("Profile save failed");
-          return;
-        }
-
-        window.location.href = "/dashboard";
-
-      } catch (error) {
-        console.error("Onboarding save error:", error);
+      if (!response.ok) {
+        alert("Failed to save profile. Try again.");
+        return;
       }
 
+      window.location.href = "/dashboard";
       return;
     }
 
+    // 👉 MOVE TO NEXT STEP
     setStep(step + 1);
-  };
+
+  } catch (error) {
+    console.error("Onboarding error:", error);
+    alert("Something went wrong. Check connection.");
+  } finally {
+    setIsLoading(false); // ✅ ALWAYS RESET
+  }
+};
 
   const prevStep = () => {
     if (step > 0) setStep(step - 1);
@@ -376,9 +387,17 @@ function Onboarding() {
               >
                 Back
               </button>
-              <button className="btn-primary" onClick={nextStep}>
-                {step === slides - 1 ? "Complete Setup" : "Continue"}
-              </button>
+              <button
+  className="btn-primary"
+  onClick={nextStep}
+  disabled={isLoading}
+>
+  {isLoading
+    ? "Saving..."
+    : step === slides - 1
+    ? "Complete Setup"
+    : "Continue"}
+</button>
             </div>
 
           </div>
