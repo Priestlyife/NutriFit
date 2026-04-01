@@ -39,7 +39,7 @@ function Workouts() {
   useEffect(() => {
     const fetchWorkout = async () => {
       try {
-        const user = JSON.parse(localStorage.getItem("user"));
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
 
         const res = await axios.post(
   `${API}/api/ai/chat`,
@@ -68,7 +68,7 @@ function Workouts() {
         }
 
       } catch (error) {
-        console.error("Workout error:", error);
+        console.error("Workout error:", error.response?.data || error.message);
         setExercises(["Push-ups", "Squats", "Plank", "Jumping Jacks", "Sit-ups"]);
       }
     };

@@ -16,8 +16,8 @@ import {
 } from "recharts";
 
 function Dashboard() {
-  const userData = JSON.parse(localStorage.getItem("user"));
-  const userName = userData?.name || "User";
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const userName = user?.name || "User";
   const [question, setQuestion] = useState("");
   const [aiResponse, setAiResponse] = useState("");
   const [lastQuestion, setLastQuestion] = useState("");
@@ -132,7 +132,7 @@ useEffect(() => {
       setRecommendedMeal(res.data.reply);
 
     } catch (error) {
-      console.error("AI meal error:", error);
+      console.error("AI meal error:", error.response?.data || error.message);
     }
   };
 
@@ -167,7 +167,7 @@ useEffect(() => {
     setLastQuestion(question);
 
     try {
-      const user = JSON.parse(localStorage.getItem("user"));
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
 
 const res = await axios.post(
   `${API}/api/ai/chat`,
@@ -396,7 +396,9 @@ const isOver = caloriesConsumed > calorieGoal;
             {/* Legend Wrapper */}
             <div style={{ display: "flex", flexDirection: "column", gap: "14px", minWidth: "130px", paddingRight: "10px" }}>
               {macroData.map((entry, index) => {
-                const macroPercentage = Math.round((entry.value / totalMacros) * 100);
+                const macroPercentage = totalMacros
+  ? Math.round((entry.value / totalMacros) * 100)
+  : 0;
                 
                 return (
                   <div key={index} style={{ display: "flex", alignItems: "center", gap: "12px", fontSize: "15px" }}>

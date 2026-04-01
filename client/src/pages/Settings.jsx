@@ -23,7 +23,7 @@ function Settings() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const user = JSON.parse(localStorage.getItem("user"));
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
         setUserProfile(user);
 
           const res = await axios.get(
@@ -34,7 +34,7 @@ function Settings() {
           setForm(res.data);
         }
       } catch (error) {
-        console.error("Fetch error:", error);
+        console.error("Fetch error:", error.response?.data || error.message);
       }
     };
 

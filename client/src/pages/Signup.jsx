@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import API from "../config";
 import GoogleIcon from "../components/GoogleIcon";
 
 function Signup() {
@@ -15,9 +16,9 @@ function Signup() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/register",
-        { name, email, password }
-      );
+  `${API}/api/auth/register`,
+  { name, email, password }
+);
 
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));

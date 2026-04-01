@@ -19,14 +19,14 @@ function Meals() {
 
   const fetchMeals = async () => {
     try {
-      const user = JSON.parse(localStorage.getItem("user"));
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
 
 const res = await axios.get(
   `${API}/api/ai/meals?userId=${user.id}`
 );
       setMeals(res.data);
     } catch (error) {
-      console.error("Error fetching meals:", error);
+      console.error("Error fetching meals:", error.response?.data || error.message);
     }
   };
 
@@ -47,7 +47,12 @@ const res = await axios.get(
 
     const res = await axios.post(
   `${API}/api/ai/scan-food`,
-  formData
+  formData,
+  {
+    headers: {
+      "Content-Type": "multipart/form-data"
+    }
+  }
 );
 
     setResult(res.data.result);
@@ -71,7 +76,7 @@ const askMealAI = async () => {
   if (!chatMessage.trim()) return;
 
   try {
-    const user = JSON.parse(localStorage.getItem("user"));
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
 
     const res = await axios.post(
   `${API}/api/ai/chat`,

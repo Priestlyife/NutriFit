@@ -1,3 +1,3 @@
-const API = "https://slow-ghosts-like.loca.lt";
+const API = "https://nutrifit-production-604d.up.railway.app";
 
 export default API;

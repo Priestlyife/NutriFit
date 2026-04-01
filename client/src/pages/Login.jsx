@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import API from "../config";
 import GoogleIcon from "../components/GoogleIcon";
 
 function Login() {
@@ -14,17 +15,15 @@ function Login() {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/login",
-        { email, password }
-      );
+      const response = await axios.post(`${API}/api/auth/login`, { email, password });
 
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
       navigate("/dashboard");
     } catch (err) {
-      setError("Invalid email or password");
-    }
+  console.log(err.response?.data || err.message);
+  setError(err.response?.data?.message || "Login failed");
+}
   };
 
   const styles = {
