@@ -145,9 +145,24 @@ useEffect(() => {
     try {
       const user = JSON.parse(localStorage.getItem("user"));
 
+      const profileRes = await axios.get(
+        `${API}/api/profile/${user.id}`
+      );
+
+      const createdAt = new Date(profileRes.data.createdAt);
+      const now = new Date();
+
+      const diffDays = (now - createdAt) / (1000 * 60 * 60 * 24);
+
+      // ❌ STOP EARLY
+      if (diffDays < 30) {
+        setMonthlyReport("Monthly report will be available after 30 days.");
+        return;
+      }
+
       const res = await axios.get(
-  `${API}/api/ai/monthly-report?userId=${user.id}`
-);
+        `${API}/api/ai/monthly-report?userId=${user.id}`
+      );
 
       setMonthlyReport(res.data.report);
 

@@ -46,19 +46,38 @@ router.post("/create", async (req, res) => {
       weeklyTarget
     } = req.body;
 
+    // 🔥 VALIDATION (CRITICAL FIX)
+    if (!weight || !height || !age || !activityLevel) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields"
+      });
+    }
+
     const calculatedCalories = calculateCalories(
-      weight,
-      height,
-      age,
+      Number(weight),
+      Number(height),
+      Number(age),
       gender,
       activityLevel,
       goal
     );
 
+    if (isNaN(calculatedCalories)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid calorie calculation"
+      });
+    }
+
     const existing = await Profile.findOne({ userId });
 
     if (existing) {
-      return res.status(400).json({ message: "Profile already exists" });
+      return res.status(200).json({
+        success: true,
+        message: "Profile already exists",
+        profile: existing
+      });
     }
 
     const profile = new Profile({
@@ -78,11 +97,20 @@ router.post("/create", async (req, res) => {
 
     await profile.save();
 
-    res.json({ message: "Profile created", profile });
+    // ✅ ALWAYS RETURN SUCCESS CLEANLY
+    res.status(200).json({
+      success: true,
+      message: "Profile created successfully",
+      profile
+    });
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Create error" });
+    console.error("CREATE PROFILE ERROR:", error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message || "Create error"
+    });
   }
 });
 

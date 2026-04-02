@@ -96,11 +96,21 @@ function Onboarding() {
       console.log("PROFILE RESPONSE:", data);
 
       if (!response.ok) {
-        alert(data.message || "Failed to save profile. Try again.");
-        return;
-      }
+  console.error("Backend:", data);
 
-      window.location.href = "/dashboard";
+  // ✅ If backend still saved it, continue
+  if (data?.success || data?.profile) {
+    window.location.href = "/dashboard";
+    return;
+  }
+
+  alert(data.message || "Failed to save profile");
+  return;
+}
+
+      setTimeout(() => {
+  window.location.href = "/dashboard";
+}, 300);
       return;
     }
 
