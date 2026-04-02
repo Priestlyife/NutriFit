@@ -33,31 +33,33 @@ function Onboarding() {
   const nextStep = async () => {
   if (isLoading) return;
 
+  // ✅ VALIDATION FIRST (NO LOADING YET)
+  if (step === 0 && !formData.goal) return;
+
+  if (
+    step === 1 &&
+    (!formData.age ||
+      !formData.gender ||
+      !formData.height ||
+      !formData.weight)
+  )
+    return;
+
+  if (step === 2 && !formData.activity) return;
+  if (step === 3 && !formData.diet) return;
+  if (step === 4 && !formData.weeklyTarget) return;
+
+  // 👉 ONLY NOW start loading
   setIsLoading(true);
 
   try {
-    // STEP 0 - Goal validation
-    if (step === 0 && !formData.goal) return;
-
-    // STEP 1 - Basic info validation
-    if (
-      step === 1 &&
-      (!formData.age ||
-        !formData.gender ||
-        !formData.height ||
-        !formData.weight)
-    )
-      return;
-
-    // STEP 2 - Activity validation
-    if (step === 2 && !formData.activity) return;
-
-    // STEP 3 - Diet validation
-    if (step === 3 && !formData.diet) return;
-
-    // 🔥 FINAL STEP (SAVE DATA)
     if (step === slides - 1) {
       const calories = calculateCalories();
+
+      if (!calories || isNaN(calories)) {
+        alert("Please complete all fields properly");
+        return;
+      }
 
       const userData = localStorage.getItem("user");
 
@@ -69,7 +71,7 @@ function Onboarding() {
       const user = JSON.parse(userData);
 
       const finalUserData = {
-        userId: user.id,
+        userId: user._id || user.id, // ✅ FIXED
         goal: formData.goal,
         age: formData.age,
         gender: formData.gender,
@@ -94,7 +96,7 @@ function Onboarding() {
       console.log("PROFILE RESPONSE:", data);
 
       if (!response.ok) {
-        alert("Failed to save profile. Try again.");
+        alert(data.message || "Failed to save profile. Try again.");
         return;
       }
 
@@ -102,14 +104,13 @@ function Onboarding() {
       return;
     }
 
-    // 👉 MOVE TO NEXT STEP
     setStep(step + 1);
 
   } catch (error) {
     console.error("Onboarding error:", error);
     alert("Something went wrong. Check connection.");
   } finally {
-    setIsLoading(false); // ✅ ALWAYS RESET
+    setIsLoading(false);
   }
 };
 
@@ -119,45 +120,44 @@ function Onboarding() {
 
 
   const calculateCalories = () => {
-    let weight = parseFloat(formData.weight);
-    let height = parseFloat(formData.height);
-    let age = parseInt(formData.age);
+  let weight = parseFloat(formData.weight);
+  let height = parseFloat(formData.height);
+  let age = parseInt(formData.age);
 
-    // Convert imperial to metric if needed
-    if (formData.unit === "imperial") {
-      weight = weight * 0.453592; // lbs → kg
-      height = height * 2.54;     // inches → cm
-    }
+  // 🚨 SAFETY CHECK
+  if (!weight || !height || !age || !formData.activity) {
+    console.error("Invalid data for calorie calculation");
+    return 2000; // fallback
+  }
 
-    let bmr;
+  if (formData.unit === "imperial") {
+    weight = weight * 0.453592;
+    height = height * 2.54;
+  }
 
-    // Mifflin-St Jeor Formula
-    if (formData.gender === "male") {
-      bmr = 10 * weight + 6.25 * height - 5 * age + 5;
-    } else {
-      bmr = 10 * weight + 6.25 * height - 5 * age - 161;
-    }
+  let bmr;
 
-    // Activity multiplier
-    const activityMultipliers = {
-      sedentary: 1.2,
-      light: 1.375,
-      moderate: 1.55,
-      very: 1.725,
-      athlete: 1.9
-    };
+  if (formData.gender === "male") {
+    bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+  } else {
+    bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+  }
 
-    let tdee = bmr * activityMultipliers[formData.activity];
-
-    // Adjust based on goal
-    if (formData.goal === "lose") {
-      tdee -= 500;
-    } else if (formData.goal === "gain") {
-      tdee += 500;
-    }
-
-    return Math.round(tdee);
+  const activityMultipliers = {
+    sedentary: 1.2,
+    light: 1.375,
+    moderate: 1.55,
+    very: 1.725,
+    athlete: 1.9
   };
+
+  let tdee = bmr * activityMultipliers[formData.activity];
+
+  if (formData.goal === "lose") tdee -= 500;
+  if (formData.goal === "gain") tdee += 500;
+
+  return Math.round(tdee);
+};
 
   return (
     <div className="onboarding-container">
