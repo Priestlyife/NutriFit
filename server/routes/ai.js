@@ -116,7 +116,7 @@ try {
 }
 
 // 🖼 Generate image
-const image = `https://source.unsplash.com/400x300/?${mealName}`;
+const image = `https://source.unsplash.com/featured/?${mealName}`;
 
 // 🎥 Generate YouTube search
 const youtube = `https://www.youtube.com/results?search_query=${mealName}+recipe`;
@@ -136,14 +136,23 @@ if (message.toLowerCase().includes("workout")) {
   lastWorkoutDate = today;
 }
 
-    res.json({
+    const isFoodRequest =
+  message.toLowerCase().includes("meal") ||
+  message.toLowerCase().includes("food") ||
+  message.toLowerCase().includes("eat") ||
+  message.toLowerCase().includes("lunch") ||
+  message.toLowerCase().includes("dinner");
+
+res.json({
   reply,
-  meal: {
-    name: mealName,
-    image,
-    steps,
-    youtube
-  }
+  meal: isFoodRequest
+    ? {
+        name: mealName,
+        image,
+        steps,
+        youtube
+      }
+    : null
 });
 
   } catch (error) {

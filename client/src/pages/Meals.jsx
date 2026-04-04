@@ -78,13 +78,16 @@ const res = await axios.get(
 const askMealAI = async () => {
   if (!chatMessage.trim()) return;
 
+  const messageToSend = chatMessage; // store message
+  setChatMessage(""); // 🔥 clear input immediately
+
   try {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
 
     const res = await axios.post(
   `${API}/api/ai/chat`,
       {
-        message: chatMessage,
+        message: messageToSend,
         userId: user.id
       }
     );
