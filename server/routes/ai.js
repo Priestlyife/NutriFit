@@ -3,7 +3,7 @@ const router = express.Router();
 const OpenAI = require("openai");
 const Profile = require("../models/Profile");
 
-// 🔥 CACHE WORKOUT (add here)
+// 🔥 CACHE WORKOUT
 let cachedWorkout = null;
 let lastWorkoutDate = null;
 
@@ -12,34 +12,28 @@ const openai = new OpenAI({
 });
 
 router.post("/chat", async (req, res) => {
-
   const { message, userId } = req.body;
 
   const today = new Date().toDateString();
 
-// 🔥 If it's workout request, return cached version
-if (message.toLowerCase().includes("workout")) {
-  if (cachedWorkout && lastWorkoutDate === today) {
-    return res.json({ reply: cachedWorkout });
+  // 🔥 WORKOUT CACHE
+  if (message.toLowerCase().includes("workout")) {
+    if (cachedWorkout && lastWorkoutDate === today) {
+      return res.json({ reply: cachedWorkout, meal: null });
+    }
   }
-}
 
   try {
-
-    // Fetch user profile
+    // 🔥 GET USER PROFILE
     const profile = await Profile.findOne({ userId });
-    console.log("AI Profile:", profile);
 
     if (!profile) {
       return res.status(404).json({ message: "Profile not found" });
     }
 
+    // 🔥 SMART PROMPT (UPDATED)
     const systemPrompt = `
-You are NutriFit AI, a nutrition coach inside a fitness tracking app.
-
-IMPORTANT:
-The user's profile information is already provided.
-NEVER ask the user for their diet preference, restrictions, or goal again.
+You are NutriFit AI, a smart nutrition assistant.
 
 USER PROFILE:
 Goal: ${profile.goal}
@@ -48,30 +42,34 @@ Weight: ${profile.weight} kg
 Height: ${profile.height} cm
 Activity Level: ${profile.activityLevel}
 Diet Preference: ${profile.dietaryPreference}
-Daily Calorie Target: ${profile.calculatedCalories} kcal
+Daily Calories: ${profile.calculatedCalories} kcal
 
 RULES:
-- Always use the user profile when giving advice.
-- Never ask for more user information.
-- Always recommend a specific meal when asked about food.
-- Keep answers SHORT (2–4 sentences).
-- Include estimated calories in recommendations.
-- Focus on meals that support the user's goal.
+- If user is greeting (hi, hello), reply normally (NO meal).
+- If user asks about food, recommend ONE meal.
+- Keep explanation short (1–2 sentences).
+- Include estimated calories.
+- MOST IMPORTANT: Include SIMPLE cooking steps (3–5 steps max).
 
-Example format:
+FORMAT STRICTLY (ONLY for food requests):
 
-Recommended Lunch:
-Grilled chicken quinoa bowl  
-Calories: ~520 kcal  
-High protein meal suitable for ${profile.goal}.
+Meal:
+<meal name>
+
+Calories:
+<estimated calories>
+
+Steps:
+1. Step one
+2. Step two
+3. Step three
 `;
 
+    // 🔥 HANDLE WORKOUT REQUEST
+    let finalPrompt = message;
 
-// 🔥 FIX WORKOUT PROMPT
-let finalPrompt = message;
-
-if (message.toLowerCase().includes("workout")) {
-  finalPrompt = `
+    if (message.toLowerCase().includes("workout")) {
+      finalPrompt = `
 Generate a simple workout plan.
 
 Format EXACTLY like this:
@@ -85,86 +83,88 @@ Exercises:
 
 NO explanation.
 `;
-}
+    }
 
+    // 🔥 OPENAI CALL
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
-        {
-          role: "system",
-          content: systemPrompt
-        },
-        {
-          role: "user",
-          content: finalPrompt
-        }
+        { role: "system", content: systemPrompt },
+        { role: "user", content: finalPrompt }
       ]
     });
 
     const reply = response.choices[0].message.content;
 
-
-
-    // 🔥 Extract a simple meal name from AI reply
-let mealName = "healthy meal";
-
-try {
-  const firstLine = reply.split("\n")[1] || "";
-  mealName = firstLine.trim().split("  ")[0] || "healthy meal";
-} catch (e) {
-  mealName = "healthy meal";
-}
-
-// 🖼 Generate image
-const image = `https://source.unsplash.com/featured/?${mealName}`;
-
-// 🎥 Generate YouTube search
-const youtube = `https://www.youtube.com/results?search_query=${mealName}+recipe`;
-
-// 🍳 Fake steps (for now — works for project demo)
-const steps = [
-  "Prepare ingredients",
-  "Season properly",
-  "Cook on medium heat",
-  "Serve and enjoy"
-];
-
-
-    // 🔥 Save today's workout
-if (message.toLowerCase().includes("workout")) {
-  cachedWorkout = reply;
-  lastWorkoutDate = today;
-}
-
+    // 🔥 DETECT FOOD REQUEST
     const isFoodRequest =
-  message.toLowerCase().includes("meal") ||
-  message.toLowerCase().includes("food") ||
-  message.toLowerCase().includes("eat") ||
-  message.toLowerCase().includes("lunch") ||
-  message.toLowerCase().includes("dinner");
+      message.toLowerCase().includes("meal") ||
+      message.toLowerCase().includes("food") ||
+      message.toLowerCase().includes("eat") ||
+      message.toLowerCase().includes("lunch") ||
+      message.toLowerCase().includes("dinner");
 
-res.json({
-  reply,
-  meal: isFoodRequest
-    ? {
-        name: mealName,
-        image,
-        steps,
-        youtube
+    // 🔥 DEFAULT VALUES
+    let mealName = null;
+    let steps = [];
+    let image = null;
+    let youtube = null;
+
+    if (isFoodRequest) {
+      // 🔥 EXTRACT MEAL NAME
+      try {
+        const mealSection = reply.split("Meal:")[1];
+        if (mealSection) {
+          mealName = mealSection.split("\n")[0].trim();
+        }
+      } catch (e) {
+        mealName = "Healthy Meal";
       }
-    : null
-});
+
+      // 🔥 EXTRACT STEPS
+      try {
+        const stepsSection = reply.split("Steps:")[1];
+        if (stepsSection) {
+          steps = stepsSection
+            .trim()
+            .split("\n")
+            .filter(line => line.trim() !== "");
+        }
+      } catch (e) {
+        steps = [];
+      }
+
+      // 🔥 IMAGE + YOUTUBE
+      image = `https://source.unsplash.com/featured/?${mealName}`;
+      youtube = `https://www.youtube.com/results?search_query=${mealName}+recipe`;
+    }
+
+    // 🔥 SAVE WORKOUT CACHE
+    if (message.toLowerCase().includes("workout")) {
+      cachedWorkout = reply;
+      lastWorkoutDate = today;
+    }
+
+    // 🔥 FINAL RESPONSE
+    res.json({
+      reply,
+      meal: isFoodRequest
+        ? {
+            name: mealName,
+            image,
+            steps,
+            youtube
+          }
+        : null
+    });
 
   } catch (error) {
-
-    console.log(error);
+    console.error(error);
 
     res.status(500).json({
       message: "AI error"
     });
-
   }
-
 });
 
 module.exports = router;
