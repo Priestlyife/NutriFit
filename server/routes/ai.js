@@ -104,13 +104,47 @@ NO explanation.
     const reply = response.choices[0].message.content;
 
 
+
+    // 🔥 Extract a simple meal name from AI reply
+let mealName = "healthy meal";
+
+try {
+  const firstLine = reply.split("\n")[1] || "";
+  mealName = firstLine.trim().split("  ")[0] || "healthy meal";
+} catch (e) {
+  mealName = "healthy meal";
+}
+
+// 🖼 Generate image
+const image = `https://source.unsplash.com/400x300/?${mealName}`;
+
+// 🎥 Generate YouTube search
+const youtube = `https://www.youtube.com/results?search_query=${mealName}+recipe`;
+
+// 🍳 Fake steps (for now — works for project demo)
+const steps = [
+  "Prepare ingredients",
+  "Season properly",
+  "Cook on medium heat",
+  "Serve and enjoy"
+];
+
+
     // 🔥 Save today's workout
 if (message.toLowerCase().includes("workout")) {
   cachedWorkout = reply;
   lastWorkoutDate = today;
 }
 
-    res.json({ reply });
+    res.json({
+  reply,
+  meal: {
+    name: mealName,
+    image,
+    steps,
+    youtube
+  }
+});
 
   } catch (error) {
 

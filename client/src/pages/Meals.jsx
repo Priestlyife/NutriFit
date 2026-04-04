@@ -12,6 +12,9 @@ function Meals() {
   const [pendingMeal, setPendingMeal] = useState(null);
   const [chatMessage, setChatMessage] = useState("");
   const [chatReply, setChatReply] = useState("");
+  const [chatMeal, setChatMeal] = useState(null);
+
+
 
   useEffect(() => {
     fetchMeals();
@@ -87,7 +90,7 @@ const askMealAI = async () => {
     );
 
     setChatReply(res.data.reply);
-    setChatMessage("");
+    setChatMeal(res.data.meal);
 
   } catch (error) {
     console.error(error);
@@ -222,15 +225,47 @@ setImage(null); // ✅ THIS WAS MISSING
 
   {/* CHAT DISPLAY */}
   {chatReply && (
-    <div style={{
-      background: "#f5f5f5",
-      padding: "10px",
-      borderRadius: "10px",
-      marginBottom: "10px"
-    }}>
-      🤖 {chatReply}
-    </div>
-  )}
+  <div style={{
+    background: "#f5f5f5",
+    padding: "15px",
+    borderRadius: "10px",
+    marginBottom: "10px"
+  }}>
+    <p>🤖 {chatReply}</p>
+
+    {chatMeal && (
+      <div style={{ marginTop: "15px" }}>
+        <h4>{chatMeal.name}</h4>
+
+        <img 
+          src={chatMeal.image} 
+          alt="meal"
+          style={{ width: "100%", borderRadius: "10px" }}
+        />
+
+        <h5 style={{ marginTop: "10px" }}>Steps:</h5>
+        <ol>
+          {chatMeal.steps.map((step, i) => (
+            <li key={i}>{step}</li>
+          ))}
+        </ol>
+
+        <a 
+          href={chatMeal.youtube}
+          target="_blank"
+          style={{
+            display: "inline-block",
+            marginTop: "10px",
+            color: "red",
+            fontWeight: "bold"
+          }}
+        >
+          ▶ Watch on YouTube
+        </a>
+      </div>
+    )}
+  </div>
+)}
 
   {/* INPUT */}
   <div style={{ display: "flex", gap: "10px" }}>
