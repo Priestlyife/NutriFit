@@ -343,3 +343,24 @@ h1, h3 { margin: 0; }
     box-sizing: border-box;
   }
 }
+
+/* 🔥 MOBILE CHAT WIDTH FIX */
+@media (max-width: 768px) {
+
+  .chat-bubble-ai {
+    max-width: 95% !important;
+    width: 95% !important;
+  }
+
+  .chat-bubble-user {
+    max-width: 90% !important;
+    width: 90% !important;
+  }
+
+}
+
+.chat-bubble-ai,
+.chat-bubble-user {
+  word-wrap: break-word;
+  line-height: 1.5;
+}

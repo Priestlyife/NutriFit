@@ -236,25 +236,29 @@ setImage(null); // ✅ THIS WAS MISSING
     <div key={index} style={{ display: "flex", flexDirection: "column" }}>
       
       {chat.type === "user" && (
-        <div style={{
-          alignSelf: "flex-end",
-          background: "#2e7d32",
-          color: "white",
-          padding: "10px",
-          borderRadius: "10px",
-          maxWidth: "70%"
-        }}>
+        <div 
+className="chat-bubble-user"
+style={{
+  alignSelf: "flex-end",
+  background: "#2e7d32",
+  color: "white",
+  padding: "10px",
+  borderRadius: "10px",
+  maxWidth: "70%"
+}}>
           {chat.text}
         </div>
       )}
 
       {chat.type === "ai" && (
-        <div style={{
-          background: "#f5f5f5",
-          padding: "15px",
-          borderRadius: "10px",
-          maxWidth: "70%"
-        }}>
+        <div 
+className="chat-bubble-ai"
+style={{
+  background: "#f5f5f5",
+  padding: "15px",
+  borderRadius: "10px",
+  maxWidth: "70%"
+}}>
           <p style={{ marginBottom: "10px" }}>🤖 {chat.text}</p>
 
           {chat.meal && (
