@@ -93,14 +93,14 @@ if (isFoodRequest) {
   }
 
   // Extract steps safely
-  const stepsMatch = reply.split("Steps:");
-  if (stepsMatch[1]) {
-    steps = stepsMatch[1]
-      .trim()
-      .split("\n")
-      .map(s => s.replace(/^\d+\.\s*/, "")) // REMOVE duplicate numbers
-      .filter(s => s !== "");
-  }
+ const stepsMatch = reply.split("Steps:");
+
+if (stepsMatch[1]) {
+  steps = stepsMatch[1]
+    .split(/\d+\.\s/) // split by "1. 2. 3."
+    .map(s => s.trim())
+    .filter(s => s.length > 0);
+}
 }
 
 // 🔥 FALLBACK (VERY IMPORTANT)
@@ -109,8 +109,8 @@ if (!mealName) {
 }
 
 // 🔥 FIXED LINKS
-const image = `https://source.unsplash.com/600x400/?food,${mealName}`;
-const youtube = `https://www.youtube.com/results?search_query=how+to+cook+${mealName.replace(/ /g, "+")}`;
+const image = `https://source.unsplash.com/600x400/?${mealName.replace(/ /g, ",")},food`;
+const youtube = `https://www.youtube.com/results?search_query=how+to+cook+${mealName.replace(/ /g, "+")}+recipe`;
 
 // 🔥 FINAL RESPONSE
 res.json({

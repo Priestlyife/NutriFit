@@ -259,7 +259,9 @@ setImage(null); // ✅ THIS WAS MISSING
 
           {chat.meal && (
             <div>
-              <h4>{chat.meal.name}</h4>
+              <h4 style={{ marginTop: "10px", marginBottom: "10px" }}>
+  🍽 {chat.meal.name}
+</h4>
 
               <img
   src={chat.meal.image}
@@ -270,14 +272,23 @@ setImage(null); // ✅ THIS WAS MISSING
   style={{ width: "100%", borderRadius: "10px" }}
 />
 
-              <h5>Steps:</h5>
+              <h5 style={{ marginTop: "10px" }}>👨‍🍳 Steps:</h5>
               <ol>
                 {chat.meal.steps.map((step, i) => (
   <li key={i}>{step}</li>
 ))}
               </ol>
 
-              <a href={chat.meal.youtube} target="_blank">
+              <a 
+  href={chat.meal.youtube} 
+  target="_blank"
+  style={{
+    display: "inline-block",
+    marginTop: "10px",
+    color: "#e53935",
+    fontWeight: "bold"
+  }}
+>
                 ▶ Watch on YouTube
               </a>
             </div>
