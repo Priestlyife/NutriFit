@@ -306,7 +306,7 @@ setImage(null); // ✅ THIS WAS MISSING
 </div>
 
   {/* INPUT */}
-  <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+  <div style={{ display: "flex", gap: "10px", marginTop: "20px" , fontSize: "15px"}}>
     <input
       type="text"
       value={chatMessage}

@@ -19,6 +19,26 @@ import DashboardLayout from "./components/layout/DashboardLayout";
 function App() {
   return (
     <Router>
+
+    {/* 🌿 GLOBAL FLOATING ICONS */}
+    <div className="floating-icons">
+      {Array.from({ length: 30 }).map((_, i) => (
+        <span
+          key={i}
+          className="floating-icon"
+          style={{
+            left: Math.random() * 100 + "%",
+            animationDuration: 10 + Math.random() * 15 + "s",
+            fontSize: 20 + Math.random() * 30
+          }}
+        >
+          {[
+            "🍎","🍗","🥦","🍕","🥑","🍞","🍓","🥕",
+            "🏋️","💪","🥗","🍳","🍔","🍚","🍤"
+          ][Math.floor(Math.random() * 15)]}
+        </span>
+      ))}
+    </div>
       <Routes>
 
         {/* ================= PUBLIC ROUTES ================= */}
