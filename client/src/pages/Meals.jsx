@@ -273,11 +273,17 @@ setImage(null); // ✅ THIS WAS MISSING
 />
 
               <h5 style={{ marginTop: "10px" }}>👨‍🍳 Steps:</h5>
-              <ol>
-                {chat.meal.steps.map((step, i) => (
-  <li key={i}>{step}</li>
-))}
-              </ol>
+              <ol style={{
+  paddingLeft: "20px",
+  margin: "0",
+  listStylePosition: "inside"
+}}>
+  {chat.meal.steps.map((step, i) => (
+    <li key={i} style={{ marginBottom: "6px" }}>
+      {step}
+    </li>
+  ))}
+</ol>
 
               <a 
   href={chat.meal.youtube} 
