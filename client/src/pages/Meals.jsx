@@ -223,7 +223,7 @@ setImage(null); // ✅ THIS WAS MISSING
       )}
 
       {/* AI CHATBOX */}
-<div className="glass-card" style={{ marginTop: "20px" }}>
+<div className="glass-card" style={{ marginTop: "20px", paddingBottom: "20px" }}>
   <h3>🤖 Meal AI Assistant</h3>
 
   <p style={{ fontSize: "14px", marginBottom: "10px" }}>
@@ -255,23 +255,26 @@ setImage(null); // ✅ THIS WAS MISSING
           borderRadius: "10px",
           maxWidth: "70%"
         }}>
-          <p>🤖 {chat.text}</p>
+          <p style={{ marginBottom: "10px" }}>🤖 {chat.text}</p>
 
           {chat.meal && (
             <div>
               <h4>{chat.meal.name}</h4>
 
               <img
-                src={chat.meal.image}
-                alt="meal"
-                style={{ width: "100%", borderRadius: "10px" }}
-              />
+  src={chat.meal.image}
+  alt="meal"
+  onError={(e) => {
+    e.target.src = "https://via.placeholder.com/400x300?text=Meal+Image";
+  }}
+  style={{ width: "100%", borderRadius: "10px" }}
+/>
 
               <h5>Steps:</h5>
               <ol>
                 {chat.meal.steps.map((step, i) => (
-                  <li key={i}>{step}</li>
-                ))}
+  <li key={i}>{step}</li>
+))}
               </ol>
 
               <a href={chat.meal.youtube} target="_blank">
@@ -286,7 +289,7 @@ setImage(null); // ✅ THIS WAS MISSING
 </div>
 
   {/* INPUT */}
-  <div style={{ display: "flex", gap: "10px" }}>
+  <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
     <input
       type="text"
       value={chatMessage}

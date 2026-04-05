@@ -81,52 +81,51 @@ Steps:
 
     const reply = response.choices[0].message.content;
 
-    let mealName = null;
-    let steps = [];
-    let image = null;
-    let youtube = null;
+// 🔥 FORCE CLEAN EXTRACTION
+let mealName = null;
+let steps = [];
 
-    if (isFoodRequest) {
-      try {
-        const mealSection = reply.split("Meal:")[1];
-        if (mealSection) {
-          mealName = mealSection.split("\n")[0].trim();
-        }
-      } catch {}
+if (isFoodRequest) {
+  // Extract meal name safely
+  const mealMatch = reply.match(/Meal:\s*(.*)/i);
+  if (mealMatch) {
+    mealName = mealMatch[1].trim();
+  }
 
-      try {
-        const stepsSection = reply.split("Steps:")[1];
-        if (stepsSection) {
-          steps = stepsSection
-            .trim()
-            .split("\n")
-            .filter(s => s.trim() !== "");
-        }
-      } catch {}
+  // Extract steps safely
+  const stepsMatch = reply.split("Steps:");
+  if (stepsMatch[1]) {
+    steps = stepsMatch[1]
+      .trim()
+      .split("\n")
+      .map(s => s.replace(/^\d+\.\s*/, "")) // REMOVE duplicate numbers
+      .filter(s => s !== "");
+  }
+}
 
-      image = `https://source.unsplash.com/600x400/?${mealName},food`;
-      youtube = `https://www.youtube.com/results?search_query=how+to+cook+${mealName}`;
-    }
+// 🔥 FALLBACK (VERY IMPORTANT)
+if (!mealName) {
+  mealName = "Healthy Meal";
+}
 
-    if (message.toLowerCase().includes("workout")) {
-      cachedWorkout = reply;
-      lastWorkoutDate = today;
-    }
+// 🔥 FIXED LINKS
+const image = `https://source.unsplash.com/600x400/?food,${mealName}`;
+const youtube = `https://www.youtube.com/results?search_query=how+to+cook+${mealName.replace(/ /g, "+")}`;
 
-    res.json({
-      reply: isFoodRequest
-        ? `I recommend ${mealName}. It's a great choice for your goal.`
-        : reply,
-      meal: isFoodRequest
-        ? {
-            name: mealName,
-            image,
-            steps,
-            youtube
-          }
-        : null
-    });
-
+// 🔥 FINAL RESPONSE
+res.json({
+  reply: isFoodRequest
+    ? `I recommend ${mealName}. It's a great choice for your goal.`
+    : reply,
+  meal: isFoodRequest
+    ? {
+        name: mealName,
+        image,
+        steps,
+        youtube
+      }
+    : null
+});
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "AI error" });
