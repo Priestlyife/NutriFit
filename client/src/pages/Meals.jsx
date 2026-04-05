@@ -12,6 +12,7 @@ function Meals() {
   const [pendingMeal, setPendingMeal] = useState(null);
   const [chatMessage, setChatMessage] = useState("");
   const [chatReply, setChatReply] = useState("");
+  const [chatHistory, setChatHistory] = useState([]);
   const [chatMeal, setChatMeal] = useState(null);
 
 
@@ -92,8 +93,11 @@ const askMealAI = async () => {
       }
     );
 
-    setChatReply(res.data.reply);
-    setChatMeal(res.data.meal);
+    setChatHistory(prev => [
+  ...prev,
+  { type: "user", text: messageToSend },
+  { type: "ai", text: res.data.reply, meal: res.data.meal }
+]);
 
   } catch (error) {
     console.error(error);
@@ -227,48 +231,59 @@ setImage(null); // ✅ THIS WAS MISSING
   </p>
 
   {/* CHAT DISPLAY */}
-  {chatReply && (
-  <div style={{
-    background: "#f5f5f5",
-    padding: "15px",
-    borderRadius: "10px",
-    marginBottom: "10px"
-  }}>
-    <p>🤖 {chatReply}</p>
+  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+  {chatHistory.map((chat, index) => (
+    <div key={index} style={{ display: "flex", flexDirection: "column" }}>
+      
+      {chat.type === "user" && (
+        <div style={{
+          alignSelf: "flex-end",
+          background: "#2e7d32",
+          color: "white",
+          padding: "10px",
+          borderRadius: "10px",
+          maxWidth: "70%"
+        }}>
+          {chat.text}
+        </div>
+      )}
 
-    {chatMeal && (
-      <div style={{ marginTop: "15px" }}>
-        <h4>{chatMeal.name}</h4>
+      {chat.type === "ai" && (
+        <div style={{
+          background: "#f5f5f5",
+          padding: "15px",
+          borderRadius: "10px",
+          maxWidth: "70%"
+        }}>
+          <p>🤖 {chat.text}</p>
 
-        <img 
-          src={chatMeal.image} 
-          alt="meal"
-          style={{ width: "100%", borderRadius: "10px" }}
-        />
+          {chat.meal && (
+            <div>
+              <h4>{chat.meal.name}</h4>
 
-        <h5 style={{ marginTop: "10px" }}>Steps:</h5>
-        <ol>
-          {chatMeal.steps.map((step, i) => (
-            <li key={i}>{step}</li>
-          ))}
-        </ol>
+              <img
+                src={chat.meal.image}
+                alt="meal"
+                style={{ width: "100%", borderRadius: "10px" }}
+              />
 
-        <a 
-          href={chatMeal.youtube}
-          target="_blank"
-          style={{
-            display: "inline-block",
-            marginTop: "10px",
-            color: "red",
-            fontWeight: "bold"
-          }}
-        >
-          ▶ Watch on YouTube
-        </a>
-      </div>
-    )}
-  </div>
-)}
+              <h5>Steps:</h5>
+              <ol>
+                {chat.meal.steps.map((step, i) => (
+                  <li key={i}>{step}</li>
+                ))}
+              </ol>
+
+              <a href={chat.meal.youtube} target="_blank">
+                ▶ Watch on YouTube
+              </a>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  ))}
+</div>
 
   {/* INPUT */}
   <div style={{ display: "flex", gap: "10px" }}>

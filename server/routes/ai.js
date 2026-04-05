@@ -3,7 +3,6 @@ const router = express.Router();
 const OpenAI = require("openai");
 const Profile = require("../models/Profile");
 
-// 🔥 CACHE WORKOUT
 let cachedWorkout = null;
 let lastWorkoutDate = null;
 
@@ -13,10 +12,9 @@ const openai = new OpenAI({
 
 router.post("/chat", async (req, res) => {
   const { message, userId } = req.body;
-
   const today = new Date().toDateString();
 
-  // 🔥 WORKOUT CACHE
+  // 🔥 Workout cache
   if (message.toLowerCase().includes("workout")) {
     if (cachedWorkout && lastWorkoutDate === today) {
       return res.json({ reply: cachedWorkout, meal: null });
@@ -24,16 +22,22 @@ router.post("/chat", async (req, res) => {
   }
 
   try {
-    // 🔥 GET USER PROFILE
     const profile = await Profile.findOne({ userId });
 
     if (!profile) {
       return res.status(404).json({ message: "Profile not found" });
     }
 
-    // 🔥 SMART PROMPT (UPDATED)
+    const isFoodRequest =
+      message.toLowerCase().includes("meal") ||
+      message.toLowerCase().includes("food") ||
+      message.toLowerCase().includes("eat") ||
+      message.toLowerCase().includes("lunch") ||
+      message.toLowerCase().includes("dinner");
+
+    // 🔥 PROMPT
     const systemPrompt = `
-You are NutriFit AI, a smart nutrition assistant.
+You are NutriFit AI, a friendly and intelligent nutrition assistant.
 
 USER PROFILE:
 Goal: ${profile.goal}
@@ -42,22 +46,24 @@ Weight: ${profile.weight} kg
 Height: ${profile.height} cm
 Activity Level: ${profile.activityLevel}
 Diet Preference: ${profile.dietaryPreference}
-Daily Calories: ${profile.calculatedCalories} kcal
+Daily Calorie Target: ${profile.calculatedCalories} kcal
 
 RULES:
-- If user is greeting (hi, hello), reply normally (NO meal).
-- If user asks about food, recommend ONE meal.
-- Keep explanation short (1–2 sentences).
+- If the user greets (hi, hello), respond normally (NO meal).
+- If the user asks about food, recommend ONE meal.
+- Always use the user profile to tailor recommendations.
+- Keep tone conversational and friendly.
 - Include estimated calories.
-- MOST IMPORTANT: Include SIMPLE cooking steps (3–5 steps max).
+- Include 3–5 simple cooking steps.
+- Keep steps beginner-friendly.
 
-FORMAT STRICTLY (ONLY for food requests):
+FORMAT FOR FOOD:
 
 Meal:
 <meal name>
 
 Calories:
-<estimated calories>
+<calories>
 
 Steps:
 1. Step one
@@ -65,89 +71,52 @@ Steps:
 3. Step three
 `;
 
-    // 🔥 HANDLE WORKOUT REQUEST
-    let finalPrompt = message;
-
-    if (message.toLowerCase().includes("workout")) {
-      finalPrompt = `
-Generate a simple workout plan.
-
-Format EXACTLY like this:
-
-Exercises:
-1. Push-ups | reps: 10 | sets: 3
-2. Squats | reps: 12 | sets: 3
-3. Plank | duration: 30 sec
-4. Jumping Jacks | reps: 20
-5. Sit-ups | reps: 15
-
-NO explanation.
-`;
-    }
-
-    // 🔥 OPENAI CALL
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         { role: "system", content: systemPrompt },
-        { role: "user", content: finalPrompt }
+        { role: "user", content: message }
       ]
     });
 
     const reply = response.choices[0].message.content;
 
-    // 🔥 DETECT FOOD REQUEST
-    const isFoodRequest =
-      message.toLowerCase().includes("meal") ||
-      message.toLowerCase().includes("food") ||
-      message.toLowerCase().includes("eat") ||
-      message.toLowerCase().includes("lunch") ||
-      message.toLowerCase().includes("dinner");
-
-    // 🔥 DEFAULT VALUES
     let mealName = null;
     let steps = [];
     let image = null;
     let youtube = null;
 
     if (isFoodRequest) {
-      // 🔥 EXTRACT MEAL NAME
       try {
         const mealSection = reply.split("Meal:")[1];
         if (mealSection) {
           mealName = mealSection.split("\n")[0].trim();
         }
-      } catch (e) {
-        mealName = "Healthy Meal";
-      }
+      } catch {}
 
-      // 🔥 EXTRACT STEPS
       try {
         const stepsSection = reply.split("Steps:")[1];
         if (stepsSection) {
           steps = stepsSection
             .trim()
             .split("\n")
-            .filter(line => line.trim() !== "");
+            .filter(s => s.trim() !== "");
         }
-      } catch (e) {
-        steps = [];
-      }
+      } catch {}
 
-      // 🔥 IMAGE + YOUTUBE
-      image = `https://source.unsplash.com/featured/?${mealName}`;
-      youtube = `https://www.youtube.com/results?search_query=${mealName}+recipe`;
+      image = `https://source.unsplash.com/600x400/?${mealName},food`;
+      youtube = `https://www.youtube.com/results?search_query=how+to+cook+${mealName}`;
     }
 
-    // 🔥 SAVE WORKOUT CACHE
     if (message.toLowerCase().includes("workout")) {
       cachedWorkout = reply;
       lastWorkoutDate = today;
     }
 
-    // 🔥 FINAL RESPONSE
     res.json({
-      reply,
+      reply: isFoodRequest
+        ? `I recommend ${mealName}. It's a great choice for your goal.`
+        : reply,
       meal: isFoodRequest
         ? {
             name: mealName,
@@ -160,10 +129,7 @@ NO explanation.
 
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: "AI error"
-    });
+    res.status(500).json({ message: "AI error" });
   }
 });
 
