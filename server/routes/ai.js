@@ -109,7 +109,14 @@ if (!mealName) {
 }
 
 // 🔥 FIXED LINKS
-const image = `https://source.unsplash.com/600x400/?${mealName.replace(/ /g, ",")},food`;
+const cleanMeal = mealName
+  .toLowerCase()
+  .replace(/[^a-zA-Z0-9 ]/g, "")
+  .split(" ")
+  .slice(0, 2) // only first 2 words (VERY IMPORTANT)
+  .join(",");
+
+const image = `https://loremflickr.com/600/400/${cleanMeal},food`;
 const youtube = `https://www.youtube.com/results?search_query=how+to+cook+${mealName.replace(/ /g, "+")}+recipe`;
 
 // 🔥 FINAL RESPONSE
